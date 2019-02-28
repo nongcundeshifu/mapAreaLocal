@@ -1,0 +1,61 @@
+
+
+// 圆形的圆角
+@mixin circle-radius{
+    border-radius: 100%;
+}
+
+
+// webkit浏览器和移动端多行超出隐藏解决方案
+// $line 行数
+@mixin  multiple-lines-ellipsis($line) {
+    overflow : hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    // （非规范属性）
+    -webkit-line-clamp: #{$line};
+    -webkit-box-orient: vertical;
+    word-break: break-all; /* 追加这一行代码 */
+}
+
+
+// 遮挡的黑幕mask
+@mixin mask() {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+// 定位居中
+@mixin position-middle() {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+
+// 动画效果
+@mixin zoom-animate() {
+    // 动画过渡
+    .zoom-enter-active {
+        transition: all .5s ease;
+        transform: scale3d(1, 1, 1);
+        opacity: 1;
+    }
+    .zoom-leave-active {
+        transition: all .5s ease;
+    }
+    .zoom-enter, .zoom-leave-to
+        /* .slide-fade-leave-active for below version 2.1.8 */ {
+        transform: scale3d(0, 0, 1);
+        opacity: 0;
+    }
+}
+
+
