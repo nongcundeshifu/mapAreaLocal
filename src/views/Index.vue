@@ -2,12 +2,12 @@
 
     <div class="">
         <div class="shell">
-            <div class="map-area-wrapper" :style="mapAreaStyle">
-                <img src="../assets/images/test.png" @load="imgLoad" ondragstart="return false;"/>
+            <div ref="areaWrapper" class="map-area-wrapper" :style="mapAreaStyle" :class="{ 'has-bg': hideImg }">
+                <img v-show="!hideImg" src="../assets/images/test.png" @load="imgLoad" ondragstart="return false;"/>
 
                 <!--存储所有area的元素-->
                 <div class="area-wrapper">
-                    <map-area :title="1"></map-area>
+                    <map-area :title="1" :local-x="localX" :local-y="localY"></map-area>
                 </div>
             </div>
         </div>
@@ -17,21 +17,29 @@
 </template>
 
 <script>
-    import MapArea from '../components/MapArea';
+    import MapArea from '../components/mapArea/MapArea';
     export default {
         name: "Index",
         data() {
             return {
                 mapAreaH: 'auto',
                 mapAreaW: 'auto',
+                hideImg: false,
+                localX: 0,
+                localY: 0,
             }
+        },
+        mounted() {
+            const offset = $(this.$refs.areaWrapper).offset();
+            this.localX = offset.left;
+            this.localY = offset.top;
+
         },
         methods: {
             imgLoad(e) {
-                console.log(e);
                 this.mapAreaH = e.path[0].naturalHeight;
                 this.mapAreaW = e.path[0].naturalWidth;
-                console.log(e.path[0].naturalWidth)
+                this.hideImg = true;
 
             },
         },
@@ -40,6 +48,7 @@
                 return {
                     width: this.mapAreaW === 'auto' ? 'auto' : this.mapAreaW + 'px',
                     height: this.mapAreaH === 'auto' ? 'auto' : this.mapAreaH + 'px',
+                    backgroundImage: `url(${MapArea})`,
                 }
             },
         },
@@ -50,18 +59,10 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .shell {
         padding: 20px;
 
     }
-    .map-area-wrapper {
-        font-size: 0;
-        border: 1px solid red;
-        position: relative;
 
-        .area-wrapper {
-            font-size: 16px;
-        }
-    }
 </style>
