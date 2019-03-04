@@ -1,17 +1,16 @@
 <template>
-    <div  class="map" :style="mapAreaStyle" :class="{ 'has-bg': hideImg }">
-        <img v-show="!hideImg" src="../assets/images/test.png" @load="imgLoad" ondragstart="return false;"/>
+    <div class="map-wrapper" :style="mapAreaStyle">
 
         <!--存储所有area的元素-->
         <div class="area-wrapper">
-            <map-area :title="1" :local-x="localX" :local-y="localY"></map-area>
+            <slot></slot>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: "Map",
+        name: "MapWapper",
         props: {
             imgSrc: String,
         },
@@ -19,8 +18,6 @@
             return {
                 mapAreaH: 'auto',
                 mapAreaW: 'auto',
-                localX: 0,
-                localY: 0,
             }
         },
         computed: {
@@ -32,12 +29,18 @@
                 }
             },
         },
+        created() {
+            this.loadImg();
+        },
+        mounted() {
+
+        },
         methods: {
             loadImg() {
                 var img=new Image();
                 img.onload = (e) => {
-                    this.mapAreaH = e.naturalHeight;
-                    this.mapAreaW = e.naturalWidth;
+                    this.mapAreaH = e.path[0].naturalHeight;
+                    this.mapAreaW = e.path[0].naturalWidth;
                 };
                 img.onerror=function(){
 
@@ -58,7 +61,7 @@
 </script>
 
 <style scoped lang="scss">
-    .map-area-wrapper {
+    .map-wrapper {
         font-size: 0;
         border: 1px solid red;
         position: relative;
