@@ -3,9 +3,10 @@
     <div class="">
         <div class="shell">
             <map-wapper ref="map" :img-src="imgSrc">
-                <map-area v-for="(item, index) in area" :key="index" :show-panel="showPanel"
+                <map-area v-for="(item, index) in area" :key="index" :show-panel="item.isShowPanel"
                           :local-x="localX" :local-y="localY" :local-type="item.panelLocalType"
-                          :x.sync="item.x" :y.sync="item.y" :flag="index" ></map-area>
+                          :x.sync="item.x" :y.sync="item.y" :flag="index"
+                          :panel-x.sync="item.panelX" :panel-y.sync="item.panelY"></map-area>
             </map-wapper>
         </div>
         <div>
@@ -28,7 +29,11 @@
             导出位置信息的倍数：<el-input v-model="zoomNum" placeholder="设置导出位置信息的倍数"></el-input>
         </div>
         <el-button>导出位置信息</el-button>
-        <el-button @click="showPanel = !showPanel">切换panel面板显示</el-button>
+        <div>
+            <el-input v-model="panelIndex" placeholder="设置导出位置信息的倍数"></el-input>
+            <el-button @click="area[panelIndex].isShowPanel = !area[panelIndex].isShowPanel">切换panel面板显示</el-button>
+        </div>
+        
 
 
         <json-viewer :value="resultJSONData" copyable></json-viewer>
@@ -39,7 +44,7 @@
 <script>
     import MapArea from '../components/mapArea/MapArea';
     import MapWapper from '../components/mapArea/MapWapper';
-    import testImg from '../assets/images/test.png';
+    import testImg from '../assets/images/test5.jpg';
     import JsonViewer from 'vue-json-viewer';
 
     const itemFactory = () => {
@@ -47,51 +52,119 @@
             data: {},
             x: 0,
             y: 0,
-            // 1 2 3 4 5 6 7 8从左到右的8种顺序
-            //         // 1是左上，2是上中 3是右上
-            //         // 4是做中，5是左中
-            //         // 6是左下，7是下中，8是右下
-            panelLocalType: 8,
+            isShowPanel: false,
+            panelX: 0,
+            panelY: 0,
         };
     }
+    
+    /*
+    
+    [
+                    {
+                        "data": {},
+                        "x": 69,
+                        "y": 48,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -1,
+                        "panelY": 44
+                    },
+                    {
+                        "data": {},
+                        "x": 49,
+                        "y": 97,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": 2,
+                        "panelY": 39
+                    },
+                    {
+                        "data": {},
+                        "x": 125,
+                        "y": 133,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -2,
+                        "panelY": 42
+                    },
+                    {
+                        "data": {},
+                        "x": 186,
+                        "y": 109,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -109,
+                        "panelY": 45
+                    },
+                    {
+                        "data": {},
+                        "x": 228,
+                        "y": 93,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -135,
+                        "panelY": 37
+                    },
+                    {
+                        "data": {},
+                        "x": 260,
+                        "y": 88,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -1,
+                        "panelY": 44
+                    },
+                    {
+                        "data": {},
+                        "x": 367,
+                        "y": 114,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -1,
+                        "panelY": 44
+                    },
+                    {
+                        "data": {},
+                        "x": 329,
+                        "y": 117,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -1,
+                        "panelY": 44
+                    },
+                    {
+                        "data": {},
+                        "x": 513,
+                        "y": 145,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -1,
+                        "panelY": 44
+                    },
+                    {
+                        "data": {},
+                        "x": 515,
+                        "y": 199,
+                        "panelLocalType": 8,
+                        "isShowPanel": false,
+                        "panelX": -1,
+                        "panelY": 44
+                    }
+                ]
+    
+    */
+    
+    
+    
 
     export default {
         name: "Index",
         data() {
             return {
                 imgSrc: testImg,
-                // area: [
-                //     {
-                //         data: {},
-                //         x: 0,
-                //         y: 0,
-                //
-                //
-                //         panelLocalType: 1,
-                //
-                //     },
-                //
-                // ],
-                area: [
-                    {
-                        "data": {},
-                        "x": 0,
-                        "y": 0,
-                        "panelLocalType": 1
-                    },
-                    {
-                        "data": {},
-                        "x": 170,
-                        "y": 210,
-                        "panelLocalType": 8
-                    },
-                    {
-                        "data": {},
-                        "x": 305,
-                        "y": 310,
-                        "panelLocalType": 8
-                    }
-                ],
+                
+                area: [],
                 localX: 0,
                 localY: 0,
                 delNumber: 0,
@@ -99,6 +172,7 @@
                 showPanel: false,
                 panelNumber: 0,
                 panelType: 8,
+                panelIndex: 0,
 
             }
         },

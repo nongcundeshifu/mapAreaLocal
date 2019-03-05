@@ -2,7 +2,9 @@
     <div ref="area" class="map-area" :style="areaLocal" @mousedown.stop="mousedown"
           @mousemove.stop="mousemove" @click="showPanelFn">
         {{flag}}
-        <div class="panel" :style="panelLocalStyle" v-show="showPanel">{{flag}}</div>
+        <div class="panel" :style="areaPanelLocal" v-show="showPanel"
+             @mousedown.stop="mousedownPanel"
+             @mousemove.stop="mousemovePanel">{{flag}}</div>
     </div>
 </template>
 
@@ -29,6 +31,14 @@
                 type: Number,
                 default: 0,
             },
+            panelX: {
+                type: Number,
+                default: 0,
+            },
+            panelY: {
+                type: Number,
+                default: 0,
+            },
             flag: [String, Number],
             // panel的位置信息
             localType: {
@@ -43,6 +53,7 @@
         data() {
             return {
                 isMousedown: false,
+                isPanelDown: false,
             }
         },
         computed: {
@@ -50,6 +61,13 @@
                 return {
                     top: `${this.y}px`,
                     left: `${this.x}px`,
+                    zIndex: this.isMousedown ? '100' : 'auto',
+                }
+            },
+            areaPanelLocal() {
+                return {
+                    top: `${this.panelY}px`,
+                    left: `${this.panelX}px`,
                     zIndex: this.isMousedown ? '100' : 'auto',
                 }
             },
@@ -115,6 +133,7 @@
             const area = this.$refs.area;
             document.addEventListener('mouseup', () => {
                 this.isMousedown = false;
+                this.isMousedownPanel = false;
             }, false);
         },
         methods: {
@@ -151,6 +170,38 @@
 
 
             },
+            
+            // panel
+            mousedownPanel(e) {
+                this.isMousedownPanel = true;
+                this.local = {
+                    layerX: e.layerX,
+                    layerY: e.layerY,
+                }
+                // 还需要计算鼠标位置 layerX layerY
+            },
+            mousemovePanel(e) {
+                if (!this.isMousedownPanel) {
+                    return;
+                }
+
+                // 需要使用clientX和clientY 他们会随滚动条进行变化
+                const currentLocal = {
+                    x: e.clientX,
+                    y: e.clientY,
+                }
+
+                const x = currentLocal.x - this.localX - this.x - this.local.layerX;
+                const y = currentLocal.y - this.localY - this.y - this.local.layerY;
+                this.$emit('update:panelX', x);
+                this.$emit('update:panelY', y);
+
+
+
+
+
+
+            },
         },
 
     }
@@ -159,16 +210,16 @@
 <style scoped lang="scss">
     .map-area {
 
-        width: 60px;
-        height: 60px;
+        width: 30px;
+        height: 30px;
         background-color: yellow;
         border-radius: 100%;
         position: absolute;
         text-align: center;
 
         .panel {
-            width: 200px;
-            height: 100px;
+            width: 550px;
+            height: 400px;
             border: 1px solid green;
             position: absolute;
             background-color: #e3e3e3;
